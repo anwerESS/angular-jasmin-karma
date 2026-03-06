@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-import {SharedService} from '../shared/shared.service';
 import {CalcService} from './calc.service';
 
 
@@ -14,9 +13,11 @@ describe('CalcService', () => {
 
 
   it("should call mySharedFunction func", () => {
-    const shared = new SharedService();
+    // const shared = new SharedService();
+    /// ("A HTTP Call") is not logged because with createSpyObj Jasmine creates a fake object, not a real class instance.
+    let shared = jasmine.createSpyObj('SharedService', ["mySharedFunction"]);
     const calc = new CalcService(shared);
-    spyOn(shared, 'mySharedFunction'); // It creates a spy and It replaces the original function with an empty fake function
+    // spyOn(shared, 'mySharedFunction'); // It creates a spy and It replaces the original function with an empty fake function
     // spyOn(shared, 'mySharedFunction').and.callThrough(); // the spy tracks the function, the real implementation still runs
     const result = calc.multiply(3, 5);
     expect(shared.mySharedFunction).toHaveBeenCalled();
