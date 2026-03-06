@@ -1,26 +1,33 @@
 import { TestBed } from '@angular/core/testing';
 import {CalcService} from './calc.service';
+import {SharedService} from '../shared/shared.service';
 
 
 describe('CalcService', () => {
 
-  // it ("should multiply two numbers", () => {
-  //   const sharedService = new SharedService();
-  //   const calcService = new CalcService(sharedService);
-  //   const result = calcService.multiply(3, 5);
-  //   expect(result).toBe(15);
-  // });
+  let sharedService: SharedService;
+  let calcService: CalcService;
 
+  beforeEach(() => {
+    console.log("BEFORE EACH");
+    TestBed.configureTestingModule({
+      providers: [CalcService, SharedService],
+    });
 
-  it("should call mySharedFunction func", () => {
-    // const shared = new SharedService();
-    /// ("A HTTP Call") is not logged because with createSpyObj Jasmine creates a fake object, not a real class instance.
-    let shared = jasmine.createSpyObj('SharedService', ["mySharedFunction"]);
-    const calc = new CalcService(shared);
-    // spyOn(shared, 'mySharedFunction'); // It creates a spy and It replaces the original function with an empty fake function
-    // spyOn(shared, 'mySharedFunction').and.callThrough(); // the spy tracks the function, the real implementation still runs
-    const result = calc.multiply(3, 5);
-    expect(shared.mySharedFunction).toHaveBeenCalled();
+    sharedService = TestBed.inject(SharedService);
+    calcService = TestBed.inject(CalcService);
+
+  })
+
+  it ("should multiply two numbers", () => {
+    const result = calcService.multiply(3, 5);
+    expect(result).toBe(15);
   });
+
+  it ("should add two numbers", () => {
+    const result = calcService.add(3, 5);
+    expect(result).toBe(8);
+  });
+
 
 });
