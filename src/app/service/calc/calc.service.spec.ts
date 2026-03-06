@@ -10,11 +10,16 @@ describe('CalcService', () => {
 
   beforeEach(() => {
     console.log("BEFORE EACH");
+    //inject fake obj
+    sharedService = jasmine.createSpyObj('sharedService', ['mySharedFunction']);
     TestBed.configureTestingModule({
-      providers: [CalcService, SharedService],
+      providers: [CalcService,
+        // When someone asks for SharedService → give this object instead
+        {provide: SharedService, useValue: sharedService}
+      ],
     });
 
-    sharedService = TestBed.inject(SharedService);
+    // sharedService = TestBed.inject(SharedService);
     calcService = TestBed.inject(CalcService);
 
   })
