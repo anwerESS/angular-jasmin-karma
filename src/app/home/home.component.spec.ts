@@ -28,6 +28,11 @@ describe('HomeComponent', () => {
     expect(pEl[0].nativeElement.textContent).toBe("home works!");
     let btnEl = el.queryAll(By.css('.btn'));
     expect(btnEl[0].nativeElement.disabled).toBeTrue();
+
+    // mandatory (tp trigger changes)because we set the data in the component
+    fixture.detectChanges();
+    let txtEl = el.queryAll(By.css('.title'));
+    expect(txtEl[0].nativeElement.textContent).toBe("Angular Unit Testing");
   })
 
 });
