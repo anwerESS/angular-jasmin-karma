@@ -3,6 +3,8 @@ import {CalcService} from './calc.service';
 import {SharedService} from '../shared/shared.service';
 
 
+// xdescribe('CalcService', () => { // xdescribe (test is not executed)
+//fdescribe('CalcService', () => { // fdescribe (focus only on that test)
 describe('CalcService', () => {
 
   let sharedService: SharedService;
@@ -24,6 +26,8 @@ describe('CalcService', () => {
 
   })
 
+   // xit ("should multiply two numbers", () => { // xit (test is not executed)
+   // fit ("should multiply two numbers", () => { // fit (focus only on that test)
   it ("should multiply two numbers", () => {
     const result = calcService.multiply(3, 5);
     expect(result).toBe(15);
