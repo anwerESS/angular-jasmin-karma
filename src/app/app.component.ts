@@ -8,5 +8,11 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'angular-jasmine-karma';
-}
+  title = 'unit-testing';
+  btnText = "Subscribe";
+  isSubscribed = false;
+
+  subscribe() {
+    this.isSubscribed = true;
+    this.btnText = "Subscribed";
+  }}

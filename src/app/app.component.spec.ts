@@ -1,60 +1,57 @@
-// Import Angular testing utilities
-import { TestBed } from '@angular/core/testing';
-// Import the component we want to test
-import { AppComponent } from './app.component';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-// Group of tests for AppComponent
+import { AppComponent } from './app.component';
+import {DebugElement} from '@angular/core';
+import {By} from '@angular/platform-browser';
+
+
 describe('AppComponent', () => {
-  // Runs before each test
+  let fixture: ComponentFixture<AppComponent>; // Angular test wrapper
+  let el: DebugElement; // Angular DOM helper
+  let component: AppComponent; // component class instance
+
   beforeEach(async () => {
-    // Create a temporary Angular testing module
     await TestBed.configureTestingModule({
-      // Because AppComponent is a standalone component
-      // we import it instead of declaring it
       imports: [AppComponent],
-    })
-      // Compile the component template and CSS
-      // Angular prepares the component for testing
-      .compileComponents(); // return a promise
+    }).compileComponents();
+    fixture = TestBed.createComponent(AppComponent);
+    el = fixture.debugElement;
+    component = fixture.componentInstance;
+
   });
 
-
-  // Test 1: Check if the component can be created
   it('should create the app', () => {
-    // Create a component test environment
     const fixture = TestBed.createComponent(AppComponent);
-    // Get the component class instance
     const app = fixture.componentInstance;
-    // Verify the component exists
     expect(app).toBeTruthy();
   });
 
+  it('should render a button with text subscribe', () => {
+    const btnElements = el.queryAll(By.css('.subscribe'));
+    component.isSubscribed = false;
+    component.btnText = "Subscribe";
+    fixture.detectChanges();
 
-  // Test 2: Check a property of the component class
-  it(`should have the 'angular-jasmine-karma' title`, () => {
-    // Create component instance
-    const fixture = TestBed.createComponent(AppComponent);
-    // Access component class
-    const app = fixture.componentInstance;
-    // Verify the value of the "title" property
-    expect(app.title).toEqual('angular-jasmine-karma');
+    expect(btnElements[0].nativeElement.textContent).toBe("Subscribe");
+    expect(btnElements[0].nativeElement.disabled).toBeFalse();
   });
 
-
-  // Test 3: Check the rendered HTML
-  it('should render title', () => {
-    // Create component
-    const fixture = TestBed.createComponent(AppComponent);
-    // Trigger Angular change detection
-    // This renders the template
+  it('should render a button with text subscribed and the button should be disabled after clicked', () => {
+    const btnElements = el.queryAll(By.css('.subscribe'));
+    component.isSubscribed = false;
+    component.btnText = "Subscribe";
+    btnElements[0].nativeElement.click();
     fixture.detectChanges();
-    // Get the real DOM element of the component
-    const compiled = fixture.nativeElement as HTMLElement;
-    // Search for the <h1> element
-    const titleElement = compiled.querySelector('h1');
-    // Check that the HTML contains the expected text
-    expect(titleElement?.textContent)
-      .toContain('Hello, angular-jasmine-karma');
+
+    expect(btnElements[0].nativeElement.textContent).toBe("Subscribed");
+    expect(btnElements[0].nativeElement.disabled).toBeTrue();
   });
 
 });
+
+
+/*
+  `fixture` is the test wrapper around the component.
+  `component` This is simply the component class instance.
+  `DebugElement` is an Angular wrapper around a DOM element.
+ */
