@@ -1,0 +1,325 @@
+commit 812486072922940e47d7902e5633816e5f9d93e7
+Author: anweress <chlayfa.anouar@gmail.com>
+Date:   Sat Mar 7 03:18:08 2026 +0100
+
+    3.3 xdescribe, fdescribe, xit, fit
+
+diff --git a/src/app/service/calc/calc.service.spec.ts b/src/app/service/calc/calc.service.spec.ts
+index 251d2e6..92d71d1 100644
+--- a/src/app/service/calc/calc.service.spec.ts
++++ b/src/app/service/calc/calc.service.spec.ts
+@@ -3,6 +3,8 @@ import {CalcService} from './calc.service';
+ import {SharedService} from '../shared/shared.service';
+
+
++// xdescribe('CalcService', () => { // xdescribe (test is not executed)
++//fdescribe('CalcService', () => { // fdescribe (focus only on that test)
+ describe('CalcService', () => {
+
+   let sharedService: SharedService;
+@@ -24,6 +26,8 @@ describe('CalcService', () => {
+
+   })
+
++   // xit ("should multiply two numbers", () => { // xit (test is not executed)
++   // fit ("should multiply two numbers", () => { // fit (focus only on that test)
+   it ("should multiply two numbers", () => {
+     const result = calcService.multiply(3, 5);
+     expect(result).toBe(15);
+
+commit 2b576d0028e326bbe88b78fddbfba8a3cff8a9bc
+Author: anweress <chlayfa.anouar@gmail.com>
+Date:   Sat Mar 7 00:19:16 2026 +0100
+
+    3.2 before each & DI (create fake (spy) instance of the service)
+
+diff --git a/src/app/service/calc/calc.service.spec.ts b/src/app/service/calc/calc.service.spec.ts
+index 407768d..251d2e6 100644
+--- a/src/app/service/calc/calc.service.spec.ts
++++ b/src/app/service/calc/calc.service.spec.ts
+@@ -10,11 +10,16 @@ describe('CalcService', () => {
+
+   beforeEach(() => {
+     console.log("BEFORE EACH");
++    //inject fake obj
++    sharedService = jasmine.createSpyObj('sharedService', ['mySharedFunction']);
+     TestBed.configureTestingModule({
+-      providers: [CalcService, SharedService],
++      providers: [CalcService,
++        // When someone asks for SharedService → give this object instead
++        {provide: SharedService, useValue: sharedService}
++      ],
+     });
+
+-    sharedService = TestBed.inject(SharedService);
++    // sharedService = TestBed.inject(SharedService);
+     calcService = TestBed.inject(CalcService);
+
+   })
+
+commit 955f969dbb1fb0676d2ba58ab99d3f49b2615c9a
+Author: anweress <chlayfa.anouar@gmail.com>
+Date:   Sat Mar 7 00:00:49 2026 +0100
+
+    3.1 before each & DI (create actual instance of the service)
+
+diff --git a/src/app/service/calc/calc.service.spec.ts b/src/app/service/calc/calc.service.spec.ts
+index cc390a9..407768d 100644
+--- a/src/app/service/calc/calc.service.spec.ts
++++ b/src/app/service/calc/calc.service.spec.ts
+@@ -1,26 +1,33 @@
+ import { TestBed } from '@angular/core/testing';
+ import {CalcService} from './calc.service';
++import {SharedService} from '../shared/shared.service';
+
+
+ describe('CalcService', () => {
+
+-  // it ("should multiply two numbers", () => {
+-  //   const sharedService = new SharedService();
+-  //   const calcService = new CalcService(sharedService);
+-  //   const result = calcService.multiply(3, 5);
+-  //   expect(result).toBe(15);
+-  // });
+-
+-
+-  it("should call mySharedFunction func", () => {
+-    // const shared = new SharedService();
+-    /// ("A HTTP Call") is not logged because with createSpyObj Jasmine creates a fake object, not a real class instance.
+-    let shared = jasmine.createSpyObj('SharedService', ["mySharedFunction"]);
+-    const calc = new CalcService(shared);
+-    // spyOn(shared, 'mySharedFunction'); // It creates a spy and It replaces the original function with an empty fake function
+-    // spyOn(shared, 'mySharedFunction').and.callThrough(); // the spy tracks the function, the real implementation still runs
+-    const result = calc.multiply(3, 5);
+-    expect(shared.mySharedFunction).toHaveBeenCalled();
++  let sharedService: SharedService;
++  let calcService: CalcService;
++
++  beforeEach(() => {
++    console.log("BEFORE EACH");
++    TestBed.configureTestingModule({
++      providers: [CalcService, SharedService],
++    });
++
++    sharedService = TestBed.inject(SharedService);
++    calcService = TestBed.inject(CalcService);
++
++  })
++
++  it ("should multiply two numbers", () => {
++    const result = calcService.multiply(3, 5);
++    expect(result).toBe(15);
+   });
+
++  it ("should add two numbers", () => {
++    const result = calcService.add(3, 5);
++    expect(result).toBe(8);
++  });
++
++
+ });
+diff --git a/src/app/service/calc/calc.service.ts b/src/app/service/calc/calc.service.ts
+index 38f4947..a8d2d61 100644
+--- a/src/app/service/calc/calc.service.ts
++++ b/src/app/service/calc/calc.service.ts
+@@ -13,4 +13,9 @@ export class CalcService {
+     return a * b;
+   }
+
++  add(a: number, b: number) {
++    this.sharedService.mySharedFunction();
++    return a + b;
++  }
++
+ }
+
+commit 9ae5542b2e8223421c56d765e8c1ca47e8d35fec
+Author: anweress <chlayfa.anouar@gmail.com>
+Date:   Fri Mar 6 21:35:55 2026 +0100
+
+    2.2 create spy object
+
+diff --git a/src/app/service/calc/calc.service.spec.ts b/src/app/service/calc/calc.service.spec.ts
+index 2316760..cc390a9 100644
+--- a/src/app/service/calc/calc.service.spec.ts
++++ b/src/app/service/calc/calc.service.spec.ts
+@@ -1,5 +1,4 @@
+ import { TestBed } from '@angular/core/testing';
+-import {SharedService} from '../shared/shared.service';
+ import {CalcService} from './calc.service';
+
+
+@@ -14,9 +13,11 @@ describe('CalcService', () => {
+
+
+   it("should call mySharedFunction func", () => {
+-    const shared = new SharedService();
++    // const shared = new SharedService();
++    /// ("A HTTP Call") is not logged because with createSpyObj Jasmine creates a fake object, not a real class instance.
++    let shared = jasmine.createSpyObj('SharedService', ["mySharedFunction"]);
+     const calc = new CalcService(shared);
+-    spyOn(shared, 'mySharedFunction'); // It creates a spy and It replaces the original function with an empty fake function
++    // spyOn(shared, 'mySharedFunction'); // It creates a spy and It replaces the original function with an empty fake function
+     // spyOn(shared, 'mySharedFunction').and.callThrough(); // the spy tracks the function, the real implementation still runs
+     const result = calc.multiply(3, 5);
+     expect(shared.mySharedFunction).toHaveBeenCalled();
+diff --git a/src/app/service/shared/shared.service.ts b/src/app/service/shared/shared.service.ts
+index d9067e4..5f2ebd0 100644
+--- a/src/app/service/shared/shared.service.ts
++++ b/src/app/service/shared/shared.service.ts
+@@ -4,6 +4,11 @@ import { Injectable } from '@angular/core';
+   providedIn: 'root',
+ })
+ export class SharedService {
++
++  constructor() {
++    console.log("A HTTP Call")
++  }
++
+   mySharedFunction() {
+     console.log('SharedService called');
+   }
+
+commit 74a05ef44afb1c937fd24715c86711860c3f8994
+Author: anweress <chlayfa.anouar@gmail.com>
+Date:   Fri Mar 6 01:38:16 2026 +0100
+
+    2.1  spyOn
+
+diff --git a/src/app/service/calc/calc.service.spec.ts b/src/app/service/calc/calc.service.spec.ts
+index 1ab44ca..2316760 100644
+--- a/src/app/service/calc/calc.service.spec.ts
++++ b/src/app/service/calc/calc.service.spec.ts
+@@ -1,13 +1,25 @@
+ import { TestBed } from '@angular/core/testing';
++import {SharedService} from '../shared/shared.service';
+ import {CalcService} from './calc.service';
+
+
+ describe('CalcService', () => {
+
+-  it ("should multiply two numbers", () => {
+-    const calcService = new CalcService();
+-    const result = calcService.multiply(3, 5);
+-    expect(result).toBe(15);
+-  })
++  // it ("should multiply two numbers", () => {
++  //   const sharedService = new SharedService();
++  //   const calcService = new CalcService(sharedService);
++  //   const result = calcService.multiply(3, 5);
++  //   expect(result).toBe(15);
++  // });
++
++
++  it("should call mySharedFunction func", () => {
++    const shared = new SharedService();
++    const calc = new CalcService(shared);
++    spyOn(shared, 'mySharedFunction'); // It creates a spy and It replaces the original function with an empty fake function
++    // spyOn(shared, 'mySharedFunction').and.callThrough(); // the spy tracks the function, the real implementation still runs
++    const result = calc.multiply(3, 5);
++    expect(shared.mySharedFunction).toHaveBeenCalled();
++  });
+
+ });
+diff --git a/src/app/service/calc/calc.service.ts b/src/app/service/calc/calc.service.ts
+index 5880bff..38f4947 100644
+--- a/src/app/service/calc/calc.service.ts
++++ b/src/app/service/calc/calc.service.ts
+@@ -1,10 +1,15 @@
+-import { Injectable } from '@angular/core';
++import {Injectable} from '@angular/core';
++import {SharedService} from '../shared/shared.service';
+
+ @Injectable({
+   providedIn: 'root',
+ })
+ export class CalcService {
++
++  constructor(private sharedService: SharedService) { }
++
+   multiply(a: number, b: number): number {
++    this.sharedService.mySharedFunction();
+     return a * b;
+   }
+
+diff --git a/src/app/service/shared/shared.service.spec.ts b/src/app/service/shared/shared.service.spec.ts
+new file mode 100644
+index 0000000..3da5345
+--- /dev/null
++++ b/src/app/service/shared/shared.service.spec.ts
+@@ -0,0 +1,16 @@
++import { TestBed } from '@angular/core/testing';
++
++import { SharedService } from './shared.service';
++
++describe('SharedService', () => {
++  let service: SharedService;
++
++  beforeEach(() => {
++    TestBed.configureTestingModule({});
++    service = TestBed.inject(SharedService);
++  });
++
++  it('should be created', () => {
++    expect(service).toBeTruthy();
++  });
++});
+diff --git a/src/app/service/shared/shared.service.ts b/src/app/service/shared/shared.service.ts
+new file mode 100644
+index 0000000..d9067e4
+--- /dev/null
++++ b/src/app/service/shared/shared.service.ts
+@@ -0,0 +1,10 @@
++import { Injectable } from '@angular/core';
++
++@Injectable({
++  providedIn: 'root',
++})
++export class SharedService {
++  mySharedFunction() {
++    console.log('SharedService called');
++  }
++}
+
+commit 745dee1169fb77d77563fadfa3392dd7ce809450
+Author: anweress <chlayfa.anouar@gmail.com>
+Date:   Fri Mar 6 01:15:42 2026 +0100
+
+    1. fist unit test
+
+diff --git a/src/app/service/calc/calc.service.spec.ts b/src/app/service/calc/calc.service.spec.ts
+new file mode 100644
+index 0000000..1ab44ca
+--- /dev/null
++++ b/src/app/service/calc/calc.service.spec.ts
+@@ -0,0 +1,13 @@
++import { TestBed } from '@angular/core/testing';
++import {CalcService} from './calc.service';
++
++
++describe('CalcService', () => {
++
++  it ("should multiply two numbers", () => {
++    const calcService = new CalcService();
++    const result = calcService.multiply(3, 5);
++    expect(result).toBe(15);
++  })
++
++});
+diff --git a/src/app/service/calc/calc.service.ts b/src/app/service/calc/calc.service.ts
+new file mode 100644
+index 0000000..5880bff
+--- /dev/null
++++ b/src/app/service/calc/calc.service.ts
+@@ -0,0 +1,11 @@
++import { Injectable } from '@angular/core';
++
++@Injectable({
++  providedIn: 'root',
++})
++export class CalcService {
++  multiply(a: number, b: number): number {
++    return a * b;
++  }
++
++}
