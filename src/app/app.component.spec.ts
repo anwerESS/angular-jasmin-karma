@@ -3,6 +3,7 @@ import {ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed, tick} from
 import { AppComponent } from './app.component';
 import {DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
+import {delay, of} from 'rxjs';
 
 
 describe('AppComponent', () => {
@@ -92,7 +93,30 @@ describe('AppComponent', () => {
 
   }));
 
+  ///// the test pass because it is a synchronous observable
+  // it("should test the observable", () => {
+  //   let isSubscribed = false;
+  //   let myObs = of(isSubscribed);
+  //   myObs.subscribe(() => {
+  //     isSubscribed = true;
+  //   });
+  //   expect(isSubscribed).toBeTrue();
+  // });
+
+  //// Asynchronous observable (solved using tick)
+  it("should test the observable", fakeAsync(() => {
+    let isSubscribed = false;
+    let myObs = of(isSubscribed).pipe(delay(1000));
+    myObs.subscribe(() => {
+      isSubscribed = true;
+    });
+    tick(1000);
+    expect(isSubscribed).toBeTrue();
+  }));
+
 });
+
+
 
 
 /*
