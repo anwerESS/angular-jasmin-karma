@@ -1,4 +1,4 @@
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
 
 import { AppComponent } from './app.component';
 import {DebugElement} from '@angular/core';
@@ -52,13 +52,14 @@ describe('AppComponent', () => {
       btnElements = el.queryAll(By.css('.subscribe'));
     }, 3000);
 
-    tick(3000); // tick(ms) moves the virtual clock forward (simulate 3000 milliseconds passing)
+    // tick(3000); // tick(ms) moves the virtual clock forward (simulate 3000 milliseconds passing)
+    flush(); // insure that all async operation completed (with tich we can't guess how long it takes)
     fixture.detectChanges();
 
     expect(btnElements[0].nativeElement.textContent).toBe("Subscribed");
     expect(btnElements[0].nativeElement.disabled).toBeTrue();
 
-    tick(5000);
+    // tick(5000);
 
   }));
 
