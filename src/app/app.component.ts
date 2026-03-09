@@ -2,10 +2,11 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import {NgFor, NgIf} from '@angular/common';
 import {GradePipe} from './pipe/grade.pipe';
+import {GradeDirective} from './directive/grade.directive';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NgIf, NgFor, GradePipe],
+  imports: [RouterOutlet, NgIf, NgFor, GradePipe, GradeDirective],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
